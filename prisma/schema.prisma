@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+}
+
+model Setting {
+  key    String   @id
+  value  String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  metaTitle       String?
+  metaDescription String?
+  order           Int      @default(0)
+  isHome          Boolean  @default(false)
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Post {
+  id         String    @id @default(cuid())
+  title      String
+  slug       String    @unique
+  excerpt    String    @db.Text
+  content    String    @db.Text
+  coverImage String?
+  published  Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Menu {
+  id    String     @id @default(cuid())
+  name  String
+  slug  String     @unique
+  items MenuItem[]
+}
+
+model MenuItem {
+  id        String @id @default(cuid())
+  menuId    String
+  menu      Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  label     String
+  kind      String @default("page")
+  refId     String?
+  url       String?
+  sortOrder Int    @default(0)
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}
